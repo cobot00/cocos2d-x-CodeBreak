@@ -102,7 +102,6 @@ void MainScene::appendButton(Vec2 point)
 {
     auto decideLbl = LabelTTF::create("決定", "Arial", 24);
     auto decideBtn = ControlButton::create(decideLbl, Scale9Sprite::create("Images/CyanSquare.png"));
-    //decideBtn->setAdjustBackgroundImage(true);
     decideBtn->setPreferredSize(Size(150, 40));
     decideBtn->setPosition(point.x, point.y - 50);
     decideBtn->addTargetWithActionForControlEvents(
@@ -114,7 +113,6 @@ void MainScene::appendButton(Vec2 point)
 
     auto resetLbl = LabelTTF::create("諦める", "Arial", 24);
     auto resetBtn = ControlButton::create(resetLbl, Scale9Sprite::create("extensions/orange_edit.png"));
-    //resetBtn->setAdjustBackgroundImage(true);
     resetBtn->setPreferredSize(Size(150, 40));
     resetBtn->setPosition(point.x, point.y - 150);
     resetBtn->addTargetWithActionForControlEvents(
@@ -133,6 +131,18 @@ void MainScene::onTapDecideButton(Ref* sender, Control::EventType controlEvent)
         return;
     }
 
+    codeBreak(number);
+
+    if (_tryCount == 5) {
+        MessageBox("GAME OVER","Warning");
+        auto scene = StartScene::createScene();
+        auto tran = TransitionFade::create(2, scene);
+        Director::getInstance()->replaceScene(tran);
+    }
+}
+
+void MainScene::codeBreak(const char *number)
+{
     int result[DIGIT_LENGTH] = {CODE_NONE, CODE_NONE, CODE_NONE, CODE_NONE};
     int hit = 0;
     int blow = 0;
@@ -165,30 +175,27 @@ void MainScene::onTapDecideButton(Ref* sender, Control::EventType controlEvent)
 
     _tryCount++;
 
+    if (hit == DIGIT_LENGTH) {
+        MessageBox("正解です！！","Congratulation");
+        int score = (512 / _tryCount) + static_cast<int>(CCRANDOM_0_1() * 50);
+        auto scene = SendScoreScene::createScene(score);
+        auto tran = TransitionFade::create(2, scene);
+        Director::getInstance()->replaceScene(tran);
+    }
+
+    updateResult(hit, blow, _tryCount);
+}
+
+void MainScene::updateResult(int hit, int blow, int tryCount)
+{
     std::string hitAndBlow = "HIT:";
     hitAndBlow += std::to_string(hit);
     hitAndBlow += " BLOW:";
     hitAndBlow += std::to_string(blow);
     hitAndBlow += " (";
-    hitAndBlow += std::to_string(_tryCount);
+    hitAndBlow += std::to_string(tryCount);
     hitAndBlow += "回)";
     _result->setString(hitAndBlow.c_str());
-
-    if (hit == DIGIT_LENGTH) {
-        MessageBox("正解です！！","Congratulation");
-        auto scene = SendScoreScene::createScene(512 / hit);
-        auto tran = TransitionFade::create(2, scene);
-        Director::getInstance()->replaceScene(tran);
-        return;
-    }
-
-    if (_tryCount == 5) {
-        MessageBox("GAME OVER","Warning");
-        auto scene = StartScene::createScene();
-        auto tran = TransitionFade::create(2, scene);
-        Director::getInstance()->replaceScene(tran);
-        return;
-    }
 }
 
 void MainScene::onTapResetButton(Ref* sender, Control::EventType controlEvent)

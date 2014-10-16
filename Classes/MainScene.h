@@ -16,6 +16,10 @@ private:
     std::string intToString(int*);
     int _tryCount = 0;
 
+    // コードブレイク
+    void codeBreak(const char *number);
+    void updateResult(int hit, int blow, int tryCount);
+
     // ボタン関連
     void appendButton(cocos2d::Vec2 point);
     void onTapDecideButton(cocos2d::Ref* sender, cocos2d::extension::Control::EventType controlEvent);
