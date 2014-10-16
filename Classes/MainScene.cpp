@@ -102,7 +102,8 @@ void MainScene::appendButton(Vec2 point)
 {
     auto decideLbl = LabelTTF::create("決定", "Arial", 24);
     auto decideBtn = ControlButton::create(decideLbl, Scale9Sprite::create("Images/CyanSquare.png"));
-    decideBtn->setAdjustBackgroundImage(true);
+    //decideBtn->setAdjustBackgroundImage(true);
+    decideBtn->setPreferredSize(Size(150, 40));
     decideBtn->setPosition(point.x, point.y - 50);
     decideBtn->addTargetWithActionForControlEvents(
         this,
@@ -113,7 +114,8 @@ void MainScene::appendButton(Vec2 point)
 
     auto resetLbl = LabelTTF::create("諦める", "Arial", 24);
     auto resetBtn = ControlButton::create(resetLbl, Scale9Sprite::create("extensions/orange_edit.png"));
-    resetBtn->setAdjustBackgroundImage(true);
+    //resetBtn->setAdjustBackgroundImage(true);
+    resetBtn->setPreferredSize(Size(150, 40));
     resetBtn->setPosition(point.x, point.y - 150);
     resetBtn->addTargetWithActionForControlEvents(
         this,
@@ -191,7 +193,7 @@ void MainScene::onTapDecideButton(Ref* sender, Control::EventType controlEvent)
 
 void MainScene::onTapResetButton(Ref* sender, Control::EventType controlEvent)
 {
-    MessageBox("You give up!!","Info");
+    MessageBox("スタート画面に戻ります","Give Up!!");
     auto scene = StartScene::createScene();
     auto tran = TransitionFade::create(2, scene);
     Director::getInstance()->replaceScene(tran);

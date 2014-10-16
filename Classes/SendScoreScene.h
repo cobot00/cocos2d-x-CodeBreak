@@ -13,6 +13,7 @@ private:
     // ボタン関連
     void appendButton(cocos2d::Vec2 point);
     void onTapSendButton(cocos2d::Ref* sender, cocos2d::extension::Control::EventType controlEvent);
+    void onTapReturnButton(cocos2d::Ref* sender, cocos2d::extension::Control::EventType controlEvent);
 
     // 入力欄
     cocos2d::extension::EditBox* _userIdInput;

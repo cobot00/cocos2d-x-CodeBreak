@@ -75,13 +75,23 @@ void SendScoreScene::setScore(int score)
     _score = score;
     if (_score > 0) {
         _scoreInput->setText(std::to_string(_score).c_str());
+        _scoreInput->setVisible(false);
+
+        Size visibleSize = Director::getInstance()->getVisibleSize();
+        Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+        std::string caption = "SCORE:";
+        caption += std::to_string(_score);
+        auto socreLbl = LabelTTF::create(caption, "Arial", 32);
+        socreLbl->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+        this->addChild(socreLbl, 1);
     }
 }
 
 void SendScoreScene::appendButton(Vec2 point){
     auto sendLbl = LabelTTF::create("送信", "Arial", 24);
     auto sendBtn = ControlButton::create(sendLbl, Scale9Sprite::create("Images/CyanSquare.png"));
-    sendBtn->setAdjustBackgroundImage(true);
+    sendBtn->setPreferredSize(Size(185, 40));
     sendBtn->setPosition(point.x, point.y - 100);
     sendBtn->addTargetWithActionForControlEvents(
         this,
@@ -89,10 +99,28 @@ void SendScoreScene::appendButton(Vec2 point){
         Control::EventType::TOUCH_UP_INSIDE);
 
     addChild(sendBtn);
+
+    auto returnLbl = LabelTTF::create("スタートに戻る", "Arial", 24);
+    auto returnBtn = ControlButton::create(returnLbl, Scale9Sprite::create("extensions/orange_edit.png"));
+    returnBtn->setPreferredSize(Size(185, 40));
+    returnBtn->setPosition(point.x, point.y - 170);
+    returnBtn->addTargetWithActionForControlEvents(
+        this,
+        cccontrol_selector(SendScoreScene::onTapReturnButton),
+        Control::EventType::TOUCH_UP_INSIDE);
+
+    addChild(returnBtn);
 }
 
 void SendScoreScene::onTapSendButton(Ref* sender, Control::EventType controlEvent){
     httpRequest();
+}
+
+void SendScoreScene::onTapReturnButton(Ref* sender, Control::EventType controlEvent)
+{
+    auto scene = StartScene::createScene();
+    auto tran = TransitionFade::create(2, scene);
+    Director::getInstance()->replaceScene(tran);
 }
 
 void SendScoreScene::appendInput(Vec2 point){
@@ -127,7 +155,7 @@ void SendScoreScene::httpRequest()
     std::vector<std::string> headers;
     headers.push_back("Content-Type: application/json; charset=utf-8");
     request->setHeaders(headers);
-    request->setResponseCallback(this, httpresponse_selector(SendScoreScene::onHttpRequestCallBack));
+    //request->setResponseCallback(this, httpresponse_selector(SendScoreScene::onHttpRequestCallBack));
 
     // JSONパラメーター
     std::string data = "{\"score\":";
@@ -138,10 +166,12 @@ void SendScoreScene::httpRequest()
 
     const char* buffer = data.c_str();
     request->setRequestData(buffer, strlen(buffer));
-
     network::HttpClient::getInstance()->send(request);
-
     request->release();
+
+    auto scene = StartScene::createScene();
+    auto tran = TransitionFade::create(2, scene);
+    Director::getInstance()->replaceScene(tran);
 }
 
 void SendScoreScene::onHttpRequestCallBack(HttpClient* sender, HttpResponse* response)
